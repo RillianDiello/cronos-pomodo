@@ -3,11 +3,7 @@ import { Cycles } from "../Cycles";
 import { DefaultButton } from "../DefaultButton";
 import { DefaultInput } from "../DefaultInput";
 
-type MainFormProps = {
-  children?: React.ReactNode;
-};
-
-export function MainForm({ children }: MainFormProps) {
+export function MainForm() {
   return (
     <form className="form" action="">
       <div className="formRow">
