@@ -5,15 +5,12 @@ import { DefaultInput } from "../DefaultInput";
 import { useRef } from "react";
 import type { TaskModel } from "../../models/TaskModel";
 import { useTaskContext } from "../../contexts/TaskContext/useTaskContext";
-import { getNextCycle } from "../../utils/getNextCycle";
 import { getNextCycleType } from "../../utils/getNextCycleType";
-import { formatSecondsToMinutes } from "../../utils/formatSecondsToMinuts";
 
 export function MainForm() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { state, setState } = useTaskContext();
+  const { state, dispatch } = useTaskContext();
 
-  const nextCycle = getNextCycle(state.currentCycle);
   const nextCycleType = getNextCycleType(state.currentCycle);
   const handleCreateNewTaskSubmit = (
     event: React.FormEvent<HTMLFormElement>
@@ -32,36 +29,17 @@ export function MainForm() {
       type: nextCycleType,
     };
 
-    const secondsRemaining = 60 * newTask.duration; // Convert minutes to seconds
-
-    setState((prev) => ({
-      ...prev,
-      tasks: [...prev.tasks, newTask],
-      activeTask: newTask,
-      currentCycle: nextCycle,
-      secondsRemaining: secondsRemaining,
-      formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
-      config: { ...prev.config },
-    }));
+    dispatch({
+      type: "START_TASK",
+      payload: newTask,
+    });
   };
 
   function handleStopTask(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
-    setState((prev) => ({
-      ...prev,
-      activeTask: null,
-      secondsRemaining: 0,
-      formattedSecondsRemaining: "00:00",
-      tasks: prev.tasks.map((task) => {
-        if (task.id === prev.activeTask?.id) {
-          return {
-            ...task,
-            interruptDate: Date.now(),
-          };
-        }
-        return task;
-      }),
-    })); // Reset active task and seconds remaining
+    dispatch({
+      type: "INTERRUPT_TASK",
+    });
   }
 
   return (
