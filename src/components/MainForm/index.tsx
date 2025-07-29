@@ -6,12 +6,14 @@ import { useRef } from "react";
 import type { TaskModel } from "../../models/TaskModel";
 import { useTaskContext } from "../../contexts/TaskContext/useTaskContext";
 import { getNextCycleType } from "../../utils/getNextCycleType";
+import { Tips } from "../Tips";
 
 export function MainForm() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { state, dispatch } = useTaskContext();
 
   const nextCycleType = getNextCycleType(state.currentCycle);
+
   const handleCreateNewTaskSubmit = (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -55,7 +57,7 @@ export function MainForm() {
         />
       </div>
       <div className="formRow">
-        <p>Lorem ipsum dolor, sit amet</p>
+        <Tips />
       </div>
       {state.currentCycle > 0 && (
         <div className="formRow">
