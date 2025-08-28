@@ -1,3 +1,5 @@
+import type { TaskStateModel } from "../models/TaskStateModel";
+
 let instance: TimeWorkerManager | null = null;
 export class TimeWorkerManager {
   private worker: Worker;
@@ -15,7 +17,7 @@ export class TimeWorkerManager {
     return instance;
   }
 
-  postmessage(message: any) {
+  postmessage(message: TaskStateModel) {
     if (!this.worker) {
       throw new Error("Worker is not initialized");
     }

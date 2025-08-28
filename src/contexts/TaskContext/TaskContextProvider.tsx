@@ -3,6 +3,7 @@ import { TaskContext } from "./TaskContext";
 import { initialTaskState } from "./initialTaskState";
 import { taskReducer } from "./taskReducer";
 import { TimeWorkerManager } from "../../workers/TimeWorkerManager";
+import { TaskActionTypes } from "./TaskActions";
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
@@ -14,10 +15,15 @@ export const TaskContextProvider = ({ children }: TaskContextProviderProps) => {
   const worker = TimeWorkerManager.getInstance();
   worker.onmessage = (event) => {
     const countDownSeconds = event.data;
-    console.log(countDownSeconds);
+
     if (countDownSeconds <= 0) {
-      console.log("Task completed or interrupted");
+      dispatch({ type: TaskActionTypes.COMPLETE_TASK });
       worker.terminate();
+    } else {
+      dispatch({
+        type: TaskActionTypes.COUNT_DOWN,
+        payload: { secondsRemaining: countDownSeconds },
+      });
     }
   };
 
