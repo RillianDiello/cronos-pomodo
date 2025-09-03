@@ -1,40 +1,32 @@
 import type { TaskStateModel } from "../models/TaskStateModel";
 
-let instance: TimeWorkerManager | null = null;
-export class TimeWorkerManager {
+let instance: TimerWorkerManager | null = null;
+
+export class TimerWorkerManager {
   private worker: Worker;
 
   private constructor() {
-    this.worker = new Worker(new URL("./timerWorker.js", import.meta.url), {
-      type: "module",
-    });
+    this.worker = new Worker(new URL("./timerWorker.js", import.meta.url));
   }
 
-  static getInstance(): TimeWorkerManager {
+  static getInstance() {
     if (!instance) {
-      instance = new TimeWorkerManager();
+      instance = new TimerWorkerManager();
     }
+
     return instance;
   }
 
-  postmessage(message: TaskStateModel) {
-    if (!this.worker) {
-      throw new Error("Worker is not initialized");
-    }
+  postMessage(message: TaskStateModel) {
     this.worker.postMessage(message);
   }
 
-  onmessage(callback: (event: MessageEvent) => void) {
-    if (!this.worker) {
-      throw new Error("Worker is not initialized");
-    }
-    this.worker.onmessage = callback;
+  onmessage(cb: (e: MessageEvent) => void) {
+    this.worker.onmessage = cb;
   }
 
   terminate() {
-    if (this.worker) {
-      this.worker.terminate();
-      instance = null; // Reset the singleton instance
-    }
+    this.worker.terminate();
+    instance = null;
   }
 }
