@@ -7,6 +7,8 @@ import type { TaskModel } from "../../models/TaskModel";
 import { useTaskContext } from "../../contexts/TaskContext/useTaskContext";
 import { getNextCycleType } from "../../utils/getNextCycleType";
 import { Tips } from "../Tips";
+import { toast } from "react-toastify";
+import { showMessage } from "../../adapters/showMessage";
 
 export function MainForm() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,9 +20,13 @@ export function MainForm() {
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    showMessage.dismiss();
     if (!inputRef.current) return;
     const taskName = inputRef.current.value.trim();
-    if (!taskName) return;
+    if (!taskName) {
+      showMessage.warn("Task name cannot be empty");
+      return;
+    }
     const newTask: TaskModel = {
       id: Date.now().toString(),
       name: taskName,
@@ -35,10 +41,13 @@ export function MainForm() {
       type: "START_TASK",
       payload: newTask,
     });
+    showMessage.success(`Started ${nextCycleType} task: ${taskName}`);
   };
 
   function handleStopTask(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
+    showMessage.dismiss();
+    showMessage.error("Task interrupted");
     dispatch({
       type: "INTERRUPT_TASK",
     });
